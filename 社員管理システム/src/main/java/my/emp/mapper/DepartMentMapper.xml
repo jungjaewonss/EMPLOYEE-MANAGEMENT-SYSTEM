@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+
+<mapper namespace="my.emp.mapper.DepartMentMapper">
+	
+	<insert id="join" parameterType="my.emp.entity.DepartMent">
+	insert into employee (
+		name,
+		deptno,
+		gender,
+		joindate,
+		positions,
+		phone
+	)values(
+		#{name},
+		#{deptno},
+		#{gender},
+		#{joindate},
+		#{positions},
+		#{phone}
+	)
+	</insert>
+	
+	<select id="allList" resultType="my.emp.entity.DepartMent">
+		select e.id	,
+			   e.name ,
+			   e.positions,
+			   e.gender,
+			   e.phone,
+			   e.joindate,
+			   c.department
+		 from employee e inner join codemaster c on e.deptno = c.deptno;
+	</select>
+	
+	<select id="optionList" resultType="my.emp.entity.DepartMent" parameterType="my.emp.entity.SearchOption">
+			
+		<if test="option eq 'all'.toString()">
+		select e.id	,
+			   e.name ,
+			   e.positions,
+			   e.gender,
+			   e.phone,
+			   e.joindate,
+			   c.department
+		 from employee e,codemaster c where e.deptno = c.deptno ;
+		 								
+		</if>
+		
+		<if test="option eq 'department'.toString()">
+			 select e.id	,
+			   e.name ,
+			   e.positions,
+			   e.gender,
+			   e.phone,
+			   e.joindate,
+			   c.department
+			 from employee e inner join codemaster c on e.deptno = c.deptno 
+			 where ${option} like CONCAT('%', #{text},'%');
+		</if>
+		
+		<if test="option eq 'name'.toString()">
+			select e.id	,
+			   e.name ,
+			   e.positions,
+			   e.gender,
+			   e.phone,
+			   e.joindate,
+			   c.department
+			 from employee e inner join codemaster c on e.deptno = c.deptno 
+			 where ${option} like CONCAT('%', #{text},'%');	
+		</if>
+		
+		<if test="option eq 'gender'.toString()">
+			 select e.id	,
+			   e.name ,
+			   e.positions,
+			   e.gender,
+			   e.phone,
+			   e.joindate,
+			   c.department
+			 from employee e inner join codemaster c on e.deptno = c.deptno 
+			 where ${option}=#{text} order by id;
+		</if>
+		
+		<if test="option eq 'joindate'.toString()">
+			 select e.id	,
+			   e.name ,
+			   e.positions,
+			   e.gender,
+			   e.phone,
+			   e.joindate,
+			   c.department
+			 from employee e inner join codemaster c on e.deptno = c.deptno 
+			 where ${option}=#{text} order by id;
+		</if> 
+		
+		<if test="option eq 'id'.toString()">
+			select e.id	,
+			   e.name ,
+			   e.positions,
+			   e.gender,
+			   e.phone,
+			   e.joindate,
+			   c.department
+		 from employee e,codemaster c where e.deptno = c.deptno 
+		 and e.id = #{text};
+		</if>	
+	</select>
+	
+	<select id="oneInfo" parameterType="my.emp.entity.DepartMent" resultType="my.emp.entity.DepartMent">
+		select e.id	,
+			   e.name ,
+			   e.positions,
+			   e.gender,
+			   e.phone,
+			   e.joindate,
+			   e.deptno,
+			   c.department
+		 from employee e inner join codemaster c on 
+		 	e.deptno = c.deptno 
+		 	where e.id = #{id};
+	</select>
+	
+	<update id="update" parameterType="my.emp.entity.DepartMent">
+		update employee set 
+			name = #{name},
+			deptno = #{deptno},
+			positions = #{positions},
+			gender = #{gender},
+			joindate = #{joindate},
+			phone = #{phone}			
+		
+		where id = #{id};
+	</update>
+	
+	<delete id="delete" parameterType="my.emp.entity.DepartMent">
+		delete from employee where id= #{id};
+	</delete>
+	
+	<select id="checkId" parameterType="my.emp.entity.DepartMent" resultType="int">
+		select count(*) from employee where id = #{id};
+	</select>
+	
+</mapper>

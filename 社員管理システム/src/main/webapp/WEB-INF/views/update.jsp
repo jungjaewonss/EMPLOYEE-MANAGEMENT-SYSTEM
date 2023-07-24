@@ -1,0 +1,211 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>      
+<c:set var="root" value="${pageContext.request.contextPath}/"/>      
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+<meta charset="UTF-8">
+<title>updateForm</title>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		
+		
+      
+		
+		$("[id=departmentSelect]").val("${one.deptno}");
+		$("[id=positionSelect]").val("${one.positions}");
+		
+		if('${one.gender}'=='man'){
+			$("#man").attr("checked",true);
+		}else if('${one.gender}' == 'woman'){
+			$("#woman").attr("checked",true);
+		}
+		
+		var today =	'${one.joindate}';
+		$("#joindate").val(today);
+	});
+	
+
+    function sub(){
+        var name = $("#name").val();
+        var deptno = $("#departmentSelect option:selected").val();
+        var positions = $("#positionSelect option:selected").val();
+        var gender = $("input[name=gender]:checked").val();
+      	var phone = $("#phone").val();
+      	var joindate = $("#joindate").val();
+      	var id = "${one.id}";
+      	var department = deptnoToType(deptno);
+      	
+      	if(typeof gender == "undefined"){
+      		gender = "";
+      	}
+      	if(name==''){
+      		alert("名前を入力してください。");
+      		$("#name").focus();
+      		return false;
+      	}
+      	if(name.length > 20){
+      		alert("名前を２０文字以下で入力してください。");
+      		$("#name").focus();
+      		return false;
+      	}
+      	if(phone.length > 13){
+      		alert("電話番法の文字数が１３文字を超過。");
+      		$("#phone").focus();
+      		return false;
+      	}
+      	
+        $.ajax({
+        	url:"${root}department/update",
+        	type:"post",
+        	data:{	
+        			"id":id,
+        			"name":name,
+        			"deptno":deptno,
+        			"gender":gender,
+        			"joindate":joindate,
+        			"positions":positions,
+        			"phone":phone          			
+        		},
+        	success:function(){
+        			
+        			
+        			var listHtml="";
+            		listHtml+="<h2>"+'修正に成功しました。'+"</h2>"
+            		listHtml+="名前  :"+name+"<br>";
+            		listHtml+="部署  :"+department+"<br>";
+            		listHtml+="職責  :"+positions+"<br>";
+            		listHtml+="性別  :"+gender+"<br>";
+            		listHtml+="入社日 :"+joindate+"<br>";
+            		listHtml+="電話番号 :"+phone+"<br>";
+            		
+            		console.log(listHtml);
+            		$("#modalContent").append(listHtml);
+            		
+            		$("#modal").modal('show');
+        		
+        		
+        		
+        	},
+        	error:function(){
+        		alert("가입실패");
+        	}
+        });
+        
+    }
+    
+    function getToday(){
+        var date = new Date();
+        var year = date.getFullYear();
+        var month = ("0" + (1 + date.getMonth())).slice(-2);
+        var day = ("0" + date.getDate()).slice(-2);
+		
+        var todayDate = year+'-'+month+'-'+day;
+  
+        return todayDate;
+    }
+	
+    function deptnoToType(deptno){
+    	if(deptno == '001'){
+      		return'総務部';
+		}
+      	else if(deptno == '002'){
+      		return'経理部';
+      	}
+      	else if(deptno == '003'){
+      		return'営業部';
+      	}
+      	else if(deptno == '004'){
+      		return'技術部';
+      	}
+    }
+	
+</script>
+</head>
+<body>
+	<center>
+    <h2>社員情報詳修正</h2>
+
+    <div>
+        <form action="" method="post" accept-charset="UTF-8">
+            <input type="hidden" name="id" value="${one.id}">
+            <table class="table table-bordered" style="text-align: center; border: 1px solid #dddddd; width:50%">              
+                <tr>
+                    <td style="width: 100px; vertical-align: middle;">名前</td>
+                    <td><input class="form-control" type="text"
+                        placeholder="名前を入力してください。"  id="name" name="name" value="${one.name}" /></td>
+                </tr>
+
+                <tr>
+                    <td style="width: 100px; vertical-align: middle;">部署</td>
+                    <td colspan="2">
+                    	<select id="departmentSelect" name="department">
+                    		<option value=" ">部署名</option>
+							<option value="001">総務部</option>
+							<option value="002">経理部</option>
+							<option value="003">営業部</option>
+							<option value="004">技術部</option>
+						</select>
+                    </td>
+                </tr>
+                
+                <tr>
+                    <td style="width: 100px; vertical-align: middle;">職責</td>
+                    <td colspan="2">
+                    	<select id="positionSelect" name="positions">
+                    		<option value="">職責</option>
+							<option value="社員">社員</option>
+							<option value="部長">部長</option>
+							<option value="社長">社長</option>
+						</select>
+                    </td>
+                </tr>
+                
+	
+                <tr>
+                	<td style="width: 100px; vertical-align: middle;">性別</td>
+                    <td colspan="3" style="text-align: center;">
+                        <input type="radio" name="gender" value="man" id="man" />男
+                        <input type="radio" name="gender" value="woman" id="woman" />女
+                    </td>
+                </tr>
+                
+                <tr>
+                	<td style="width: 100px; vertical-align: middle;">入社日</td>
+                    <td colspan="3" style="text-align: center;">
+                        <input type="text" name="joindate" id="joindate" value="${one.joindate}" placeholder="yyyy-mm-dd" style="text-align: center;"/>
+                    </td>
+                </tr>
+                
+                <tr>
+                	<td style="width: 100px; vertical-align: middle;">電話番号</td>
+                    <td colspan="3" style="text-align: center;">
+                        <input type="text" name="phone" id="phone" value="${one.phone}" style="text-align: center;"/>
+                    </td>
+                </tr>
+             
+                <tr>
+                    <td colspan="3" style="text-align : left;">
+                        <input type="button" value="修正" class="btn btn-primary btn-sm" onclick="sub()"/>
+                        <input type="button" value="社員リスト" class="btn btn-primary btn-sm" onclick="location.href='${root}department/allList'"/>                      
+                    </td>
+                </tr>
+                
+          
+            </table>
+		</form> 
+    </div>
+    
+    <div id="modal" class="modal">
+  		<p id="modalContent"></p>
+ 		 <a href="#" rel="modal:close">닫기</a>
+	</div>
+    </center>
+</body>
+</html>
